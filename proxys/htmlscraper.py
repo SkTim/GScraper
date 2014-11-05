@@ -54,12 +54,20 @@ class HtmlScraper:
         urlretrieve(self.url,"/home/hongyin/pdf_scraper/library/" + str(global_id) +".pdf")
     
     def proxy_scrap(self):
-        proxy = {}
+        proxy = []
+        iter = re.finditer(r'''<span class="tbBottomLine" style="width:140px;">\r\n                ([^<>]*)\r\n            </span>\r\n            <span class="tbBottomLine" style="width:50px;">\r\n                    ([^<>]*)\r\n            </span>''',self.the_page)
+        for it in iter:
+            #if it.group(1) not in proxy:
+            proxy.append([it.group(1),it.group(2)])
+        return proxy
+
+    def host_scrap(self):
+        host = {}
         iter = re.finditer('''([^<>\n#]*)&nbsp;&nbsp;''',self.the_page)
         for it in iter:
-            if it.group(1) not in proxy:
-                proxy[it.group(1)] = 1
-        return proxy
+            if it.group(1) not in host:
+                host[it.group(1)] = 1
+        return host
 
     def get_website(self):
         first_url = []
