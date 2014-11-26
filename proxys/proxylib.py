@@ -3,6 +3,7 @@
 
 import json
 import urllib2
+
 import threading
 
 class ProxyLib(threading.Thread):
@@ -21,10 +22,10 @@ class ProxyLib(threading.Thread):
 
     def test_proxy(self,a,b):
         all_proxys = self.load_proxys()
+        self.good_hosts = self.load_hosts()
         cookies = urllib2.HTTPCookieProcessor()
         for i in range(a,b):
             proxy = r"http://%s:%s" %(all_proxys[i][0],all_proxys[i][1])
-            #proxy = "http://" + all_proxys[i]
             print proxy
             proxyHandler = urllib2.ProxyHandler({"http":r"http://%s:%s" %(all_proxys[i][0].encode("utf-8"),all_proxys[i][1].encode("utf-8"))})
             opener = urllib2.build_opener(cookies,proxyHandler)
@@ -32,12 +33,12 @@ class ProxyLib(threading.Thread):
             urllib2.install_opener(opener)
             for j in range(len(self.good_hosts)):
                 try:
-                    req = urllib2.urlopen(self.good_hosts[j],timeout = 10)
+                    req = urllib2.urlopen(self.good_hosts[j] + "/search?q=neural+network&hl=en-US&gws_rd=ssl",timeout = 10)
                     html = req.read()
                     print html
                     if "google" in html:
                         print "Good Proxy"
-                        self.good_proxys.append(all_proxys[i])
+                        self.good_proxys.append([all_proxys[i],self.good_hosts[j]])
                         break
                 except:
                     continue
@@ -48,15 +49,20 @@ class ProxyLib(threading.Thread):
         for i in range(len(all_hosts)):
             host = "http://" + all_hosts[i]
             try:
-                req = urllib2.urlopen(host,timeout = 10)
+                req = urllib2.urlopen(host + "/search?q=neural+network&hl=en-US&gws_rd=ssl",timeout = 10)
                 html = req.read()
                 if "google" in html:
                     print "Good Host"
                     self.good_hosts.append(host)
             except:
                 continue
-            print i
 
     def run(self):
         self.test_hosts()
+        if self.a == 0:
+            json.dump(self.good_hosts,open("good_hosts.json",'wb'))
         self.test_proxy(self.a,self.b)
+
+    def to_json(self):
+        proxys = json.dumps(self.good_proxys)
+        self.outHandle.write(proxys)

@@ -25,9 +25,6 @@ class HtmlScraper:
         print self.url
 
     def google_scrap(self):
-        #iter = re.finditer('''<!--sMSL-->([\s\S]*)<!--sMSR-->''',self.the_page)
-        #for it in iter:
-        #    self.res_html = it.group(1)
         iter = re.finditer('''<p>([\s\S]*?)</p>''',self.the_page)
         for it in iter:
             self.search_item.append(it.group(1))
@@ -57,13 +54,12 @@ class HtmlScraper:
         proxy = []
         iter = re.finditer(r'''<span class="tbBottomLine" style="width:140px;">\r\n                ([^<>]*)\r\n            </span>\r\n            <span class="tbBottomLine" style="width:50px;">\r\n                    ([^<>]*)\r\n            </span>''',self.the_page)
         for it in iter:
-            #if it.group(1) not in proxy:
             proxy.append([it.group(1),it.group(2)])
         return proxy
 
     def host_scrap(self):
         host = {}
-        iter = re.finditer('''([^<>\n#]*)&nbsp;&nbsp;''',self.the_page)
+        iter = re.finditer('''<span>([^<>]*?) &nbsp;''',self.the_page)
         for it in iter:
             if it.group(1) not in host:
                 host[it.group(1)] = 1
@@ -72,7 +68,7 @@ class HtmlScraper:
     def get_website(self):
         first_url = []
         flag = 0
-        iter = re.finditer('''herf="([^"]*)"[^<>]*>([^<>]*)<''',self.the_page)
+        iter = re.finditer('''<span>([^<>]*?) &nbsp;''',self.the_page)
         for it in iter:
             herf = it.group(1)
             textProcess = textprocess.TextProcess(it.group(2))
