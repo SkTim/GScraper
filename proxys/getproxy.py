@@ -5,7 +5,7 @@ import json
 import htmlscraper
 
 proxys = []
-urlList = ["http://www.proxy360.cn/default.aspx","http://www.proxy360.cn/Region/America","http://www.proxy360.cn/Region/Brazil","http://www.proxy360.cn/Region/Japan","http://www.proxy360.cn/Region/Taiwan"]
+urlList = ["http://www.proxy360.cn/default.aspx"]
 
 for i in range(len(urlList)):
     htmlScraper = htmlscraper.HtmlScraper(urlList[i])

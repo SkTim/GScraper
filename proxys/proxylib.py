@@ -1,4 +1,3 @@
-#encoding:utf-8
 #lhy
 #2014.11
 
@@ -36,8 +35,8 @@ class ProxyLib(threading.Thread):
             try:
                 req = urllib2.urlopen("http://www.rmrb.info/read.php?tid=1368888",timeout = 10)
                 html = req.read()
-                print html
-                if "人民日报" in html:
+                #print html
+                if "www.w3.org" in html:
                     print "Good Proxy"
                     self.good_proxys.append([all_proxys[i],self.good_hosts[j]])
                     break
