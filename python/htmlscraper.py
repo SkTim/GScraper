@@ -1,28 +1,53 @@
+#encoding:utf-8
 #lhy
 #2014.10
 
-from urllib import urlretrieve
 import urllib2
 import re
 import textprocess
 import os
+import threading
 
-class HtmlScraper:
-    def __init__(self,url):
+class HtmlScraper(threading.Thread):
+    def __init__(self,url,_range,route):
         self.url = url
         self.the_page = ""
         self.user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         self.headers = {'User-Agent':self.user_agent}
         self.res_html = ""
         self.search_item = []
-        self.html_titles = {}
-        self.res_items = {}
+        self.index = {}
+        self.range = _range
+        self.route = route
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.scrap()
 
     def scrap(self):
-        req = urllib2.Request(self.url,headers = self.headers)
-        response = urllib2.urlopen(req)
-        self.the_page = response.read()
-        print self.url
+        for i in range(self.range[0],self.range[1] + 1):
+            req = urllib2.Request(self.url + str(i),headers = self.headers)
+            response = urllib2.urlopen(req)
+            self.the_page = response.read()
+            outHandle = open(self.route + str(i),'w')
+            outHandle.write(self.news_scrap(self.the_page))
+            date = self.date_scrap(self.the_page)
+            self.index[i] = date
+
+    def date_scrap(self,web_page):
+        date = ""
+        iter = re.finditer('''<title>[|*?]|([^-|\s]*?) - 人民日报1946-2003 </title>''',web_page.decode("gbk").encode("utf8"))
+        for it in iter:
+            date = it.group(1)
+        return date
+
+    def news_scrap(self,web_page):
+        news = ""
+        iter = re.finditer('''<div class="tpc_content" id="read_tpc">([^|]*?)</div>''',web_page.decode("gbk").encode("utf8"))
+        for it in iter:
+            news = it.group(1)
+        #print news
+        return news
 
     def google_scrap(self):
         #iter = re.finditer('''<!--sMSL-->([\s\S]*)<!--sMSR-->''',self.the_page)

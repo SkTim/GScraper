@@ -1,10 +1,8 @@
 #lhy
 #2014.10
 
-import search
+import arranger
 
-scraper = search.Search()
-scraper.init_library()
-scraper.set_state()
-scraper.start_search()
-
+scraper = arranger.Arranger(50,"http://www.rmrb.info/read.php?tid=","/Users/star_hy/Desktop/data/files/")
+scraper.scrap()
+print "Data ready"
